@@ -1,0 +1,23 @@
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+# Db migrations details
+migrations
+
+# Local website settings
+home_automation/settings.py
+.idea/
+home_automation/apps/common/migrations/
+home_automation/apps/home_control/migrations/
+home_automation/apps/notes/migrations/
+home_automation/db.sqlite3
+home_automation/home_automation/__init__.pyc
+home_automation/home_automation/settings.py
+home_automation/home_automation/settings.pyc
+home_automation/home_automation/urls.pyc
+home_automation/home_automation/wsgi.py
+home_automation/home_automation/wsgi.pyc
+home_automation/manage.py
