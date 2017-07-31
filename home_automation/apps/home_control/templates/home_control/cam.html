@@ -1,0 +1,62 @@
+{% extends "common/index.html" %}
+
+
+{% block head%}
+<script>
+
+    const previewUrl = function(device_id){
+        return "{% url 'monitor:index' %}" +device_id + "/preview";
+        };
+
+    const streamUrl = function(device_id){
+        return "{% url 'monitor:index' %}" +device_id + "/feed";
+        };
+
+
+    const pause = function(device_id){
+        document.getElementById("video-"+device_id).src = previewUrl(device_id);
+        };
+
+    const play = function(device_id){
+        document.getElementById("video-"+device_id).src = streamUrl(device_id);
+        };
+
+    const run_ctrl = function(device_id, ctrl){
+        const ctrl_url = "{% url 'monitor:command' 0 1 %}".replace("0", device_id).replace("1",ctrl);
+        console.log(ctrl_url);
+        var req = new XMLHttpRequest();
+        req.open("GET", ctrl_url,true);
+    };
+
+    const openCam = function(deviceId){
+        window.open("{% url 'monitor:index' %}" +device_id + "/preview");
+        };
+
+
+</script>
+{% endblock %}
+
+{% block page %}
+
+<div class="container">
+    <div class="col-sm-8" id="preview-area">
+    {% for cam in cams %}
+    <div class="col-sm-6">
+        <div class="monitor-cam">{{cam.name}}</div>
+            <img class="img-rounded thumbnail" id="video-{{ cam.device_id }}"
+                 src="{% url 'monitor:index' %}{{cam.device_id}}/preview"
+                 onclick="openCam({{cam.device_id}})" style="width:100%; height: 100%">
+        <div class="monitor-cam-ctrl">
+            <button onclick="play({{ cam.device_id }})">Play</button>
+            <button onclick="pause({{ cam.device_id }})">Pause</button>
+            {% for ctrl in cam.cam_ctrl_keys %}
+            <button onclick="run_ctrl({{cam.device_id}}, '{{ctrl}}')">{{ctrl}}</button>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

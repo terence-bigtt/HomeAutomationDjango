@@ -1,0 +1,17 @@
+{% extends "home_control/index.html" %}
+
+{% block page %}
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    {% for link in links %}
+        <tr>
+            <td><a href="{{link.href}}" target  ="_blank">{{link.name}}</td>
+            <td>{{link.description}}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
