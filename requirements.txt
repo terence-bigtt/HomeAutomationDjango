@@ -1,1 +1,3 @@
 jsonfield
+requests
+django
