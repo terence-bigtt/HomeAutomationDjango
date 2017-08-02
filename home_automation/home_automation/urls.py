@@ -19,5 +19,6 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^monitor/', include('apps.home_control.urls_monitor', namespace="monitor")),
+    url(r'notes/', include('apps.notes.urls_notes', namespace='notes')),
     url(r'^', include('apps.common.urls_commons', namespace='common'))
 ]

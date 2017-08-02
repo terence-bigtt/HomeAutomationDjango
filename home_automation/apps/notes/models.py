@@ -32,25 +32,25 @@ class TaskPriorityOptions:
                (HIGH, "High"))
 
 
-class TaskStatus(models):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    status = models.CharField(max_length=1, choices=TaskStatusOptions.choices, default=TaskStatusOptions.WAITING)
-    created_at = models.TimeField(default=timezone.now())
-    set_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-
-
-class Task(models):
-    name = models.TextField(max_length=80)
+class ToDo(models.Model):
+    name = models.CharField(max_length=80)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    created_at = models.TimeField(default=timezone.now)
+    priority = models.CharField(max_length=1, choices=TaskPriorityOptions.choices, default=TaskPriorityOptions.LOW)
+
+
+class Task(models.Model):
+    name = models.CharField(max_length=80)
+    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='owner_user')
     todo = models.ForeignKey(ToDo, on_delete=models.CASCADE)
     due_date = models.TimeField(default=timezone.now() + timezone.timedelta(days=7))
-    created_at = models.TimeField(default=timezone.now())
-    assigned_to = models.ManyToManyField()
+    created_at = models.TimeField(default=timezone.now)
+    assigned_to = models.ManyToManyField(User, related_name='assigned_to_users')
     priority = models.CharField(max_length=1, choices=TaskPriorityOptions.choices, default=TaskPriorityOptions.LOW)
 
 
-class ToDo(models):
-    name = models.TextField(max_length=80)
-    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    created_at = models.TimeField(default=timezone.now())
-    priority = models.CharField(max_length=1, choices=TaskPriorityOptions.choices, default=TaskPriorityOptions.LOW)
+class TaskStatus(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    status = models.CharField(max_length=1, choices=TaskStatusOptions.choices, default=TaskStatusOptions.WAITING)
+    created_at = models.TimeField(default=timezone.now)
+    set_by = models.ForeignKey(User, on_delete=models.DO_NOTHING)

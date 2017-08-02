@@ -1,0 +1,26 @@
+{% extends "common/index.html" %}
+
+
+{% block page %}
+
+<h1>New ToDo List</h1>
+<form method="POST" class="post-form">
+    {% csrf_token %}
+    {{form1.as_p}}
+    <button type="submit" class="save btn btn-default">Save</button>
+</form>
+<h2>Task</h2>
+<form method="POST" class="post-form">
+    {% csrf_token %}
+    {{form2.as_p}}
+    <button type="submit" class="save btn btn-default">Save</button>
+</form>
+<h2>Status</h2>
+<form method="POST" class="post-form">
+    {% csrf_token %}
+    {{form3.as_p}}
+    <button type="submit" class="save btn btn-default">Save</button>
+</form>
+
+
+{% endblock %}

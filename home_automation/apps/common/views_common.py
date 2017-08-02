@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render, redirect
-from .models import MenuItem
 from django.contrib import messages
-from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
-from django.views.generic.edit import FormView
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, PasswordResetForm
 from django.contrib.auth import authenticate, login, update_session_auth_hash
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.views import login as view_login
 from django.contrib.auth.views import logout as view_logout
-from django.contrib.auth.views import password_change, PasswordChangeDoneView, password_reset, PasswordResetDoneView
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views.generic.edit import FormView
+from django.contrib.auth.decorators import login_required
+from .models import MenuItem
 
 menu = MenuItem.objects.order_by('id')
 
-from django.contrib.auth.decorators import login_required
+
 
 
 @login_required(login_url=reverse_lazy('common:login'))
