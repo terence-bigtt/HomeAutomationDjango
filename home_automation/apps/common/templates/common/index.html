@@ -22,7 +22,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 {% for menu_item in MENU %}
-                <li><a href="{% url 'monitor:index' %}" )>{{menu_item.caption}}</a></li>
+                <li><a href="{% url menu_item.page %}" )>{{menu_item.caption}}</a></li>
                 {% endfor %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
