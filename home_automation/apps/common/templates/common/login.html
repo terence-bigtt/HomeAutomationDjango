@@ -3,7 +3,7 @@
 
 {% block page %}
  <h2>Login</h2>
-  <form method="post" action="{% url 'login' %}">
+  <form method="post" action="{% url 'common:login' %}?next=/">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" >Login</button>
