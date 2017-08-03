@@ -1,0 +1,37 @@
+{% extends "common/index.html" %}
+
+{% block page %}
+
+<div class="col-md-6 center-block">
+    <div class="panel panel-default" style="width: 99%">
+        <div class="panel-heading">Your Todo Lists</div>
+        <div class="panel-body">
+            <ul>
+                {% for todo in todos %}
+                <li><a href="todo/{{todo.id}}/edit">{{todo.name}}</a>, Priority: {{todo.priority}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 center-block">
+    <div class="panel panel-default" style="width: 99%">
+        <div class="panel-heading">Assigned Tasks</div>
+        <div class="panel-body">
+            <ul>
+                {% for task in tasks %}
+                <li><a href="task/{{task.id}}/edit">{{task.name}}</a>, Priority: {{task.priority}} in
+                    <a href="todo/{{task.todo.id}}/edit">{{task.todo.name}}</a>, due for {{task.due_date}}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<div>
+    <form method="get" action="{% url 'notes:new_todo' %}" class="center-block col-md-3">
+        <button type="submit">New ToDo List</button>
+    </form>
+</div>
+{% endblock %}
+

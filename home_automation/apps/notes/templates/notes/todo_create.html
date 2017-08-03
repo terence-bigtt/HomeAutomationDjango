@@ -3,24 +3,43 @@
 
 {% block page %}
 
-<h1>New ToDo List</h1>
+<h1>Create A New ToDo List</h1>
+{% if step == 0 %}
 <form method="POST" class="post-form">
     {% csrf_token %}
-    {{form1.as_p}}
+    <div>
+        <label>Name</label>
+        {{form1.name}}
+    </div>
+    <div>
+        <label>Priority</label>
+        {{form1.priority}}
+    </div>
+    <input type="hidden" name="action" value="create_todo">
     <button type="submit" class="save btn btn-default">Save</button>
 </form>
-<h2>Task</h2>
-<form method="POST" class="post-form">
+{% endif %}
+{% if step == 1 %}
+<div>
+    Todo: {{todo.name}}, {{todo.priority}}
+</div>
+{% for task in tasks %}
+    <div>
+        Task : {{task.name}} due for {{task.due_date}}, priority {{task.priority}}
+    </div>
+{% endfor %}
+
+<form method="post" class="post-form">
     {% csrf_token %}
-    {{form2.as_p}}
+    <div>
+        {{task_form.as_p}}
+    </div>
+
+    <input type="hidden" name="action" value="create_task">
+    <input type="hidden" name="todo_id" value="{{todo.id}}">
     <button type="submit" class="save btn btn-default">Save</button>
 </form>
-<h2>Status</h2>
-<form method="POST" class="post-form">
-    {% csrf_token %}
-    {{form3.as_p}}
-    <button type="submit" class="save btn btn-default">Save</button>
-</form>
+{% endif %}
 
 
 {% endblock %}
