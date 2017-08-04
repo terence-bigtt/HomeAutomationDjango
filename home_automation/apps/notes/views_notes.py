@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from .forms import ToDoForm, TaskForm, TaskStatusForm
-from .models import ToDo, Task, TaskStatus
-from django.shortcuts import render, get_list_or_404
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.shortcuts import render
 from django.urls import reverse_lazy
+
+from .forms import ToDoForm, TaskForm, TaskStatusForm
+from .models import ToDo, Task
 
 
 @login_required(login_url=reverse_lazy('common:login'))
 def index(request):
     user = request.user
-    user_todo = get_list_or_404(ToDo, owner=user)
+    user_todo = ToDo.objects.filter(owner=user)
     user_tasks = Task.objects.filter(assigned_to__in=[user])
 
     return render(request, 'notes/index.html', {'todos': user_todo, 'tasks': user_tasks})
@@ -31,34 +33,50 @@ def todo_new(request):
     if request.method == "POST":
         if request.POST.get("action") == "create_todo":
             todo = insert_todo(request)
-            task_form = TaskForm
+            task_form = TaskForm(initial={"owner": request.user})
             return render(request, 'notes/todo_create.html', {'todo': todo, 'task_form': task_form, 'step': 1})
         if request.POST.get("action") == "create_task":
             todo = ToDo.objects.get(id=request.POST.get("todo_id"))
-            todo, task = insert_task(request, todo)
-            previous_tasks = Task.objects.filter(todo=todo)
-            task_form = TaskForm
-            return render(request, 'notes/todo_create.html', {'todo': todo, 'tasks': previous_tasks, 'task_form': task_form, 'step': 1})
+            insert_task(request, todo)
+            previous_tasks, task_form = refresh_tasks(request, todo)
+            return render(request, 'notes/todo_create.html',
+                          {'todo': todo, 'tasks': previous_tasks, 'task_form': task_form, 'step': 1})
+        if request.POST.get("action") == "delete_task":
+            delete_task(request)
+            todo = ToDo.objects.get(id=request.POST.get("todo_id"))
+            previous_tasks, task_form = refresh_tasks(request, todo)
+            return render(request, 'notes/todo_create.html',
+                          {'todo': todo, 'tasks': previous_tasks, 'task_form': task_form, 'step': 1})
+
+
+def refresh_tasks(request, todo):
+    previous_tasks = Task.objects.filter(todo=todo)
+    task_form = TaskForm()
+    return previous_tasks, task_form
 
 
 def insert_todo(request):
-    todo = ToDo(name=request.POST.get("name"), priority=request.POST.get("priority"), owner=request.user)
-    todo.save()
+    todo_form = ToDoForm(request.POST)
+    if todo_form.is_valid():
+        todo = todo_form.save(commit=False)
+        todo.owner = request.user
+        todo.save()
     return todo
 
 
 def insert_task(request, todo):
-    post = request.POST
+    task_form = TaskForm(request.POST)
+    if task_form.is_valid():
+        data = task_form.cleaned_data
+        task = Task(owner=request.user, name=data["name"], due_date=data["due_date"], priority=data["priority"],
+                    todo=todo, )
+        task.save()
+        task.assigned_to = data['assigned_to']
+        task.save()
+    else:
+        messages.error(request, 'Please correct the error below.', extra_tags='alert alert-danger')
 
-    task = Task(name=post.get("name"), todo=todo, due_date=post.get("due_date"), owner=request.user)
-    task.save()
-    for assignee in post.get("assigned_to"):
-        assignee_user=get_user_by_id(assignee)
-        task.assigned_to.add(assignee_user)
-    task.save()
-    TaskStatus.objects.create(set_by=request.user, task=task)
 
-    return todo, task
-
-def get_user_by_id(id):
-    return User.objects.get(id=id)
+def delete_task(request):
+    task_id = request.POST.get("task_id")
+    Task.objects.get(id=task_id).delete()

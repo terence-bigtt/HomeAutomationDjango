@@ -8,7 +8,13 @@
         <div class="panel-body">
             <ul>
                 {% for todo in todos %}
-                <li><a href="todo/{{todo.id}}/edit">{{todo.name}}</a>, Priority: {{todo.priority}}</li>
+                <li>{{todo.name}}, Priority: {{todo.priority}}</li>
+                <form action="{%url 'notes:new_todo'%}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create_task">
+                     <input type="hidden" name="todo_id" value="{{todo.id}}">
+                     <button type="submit" class="save btn btn-default"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
+                </form>
                 {% endfor %}
             </ul>
         </div>

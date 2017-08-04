@@ -1,5 +1,16 @@
 {% extends "common/index.html" %}
 
+{% block head %}
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
+<script>
+$(document).ready(function() {
+    if( $('.datepicker')){
+        $('.datepicker').datepicker();
+    }
+});
+</script>
+{% endblock %}
 
 {% block page %}
 
@@ -16,17 +27,25 @@
         {{form1.priority}}
     </div>
     <input type="hidden" name="action" value="create_todo">
-    <button type="submit" class="save btn btn-default">Save</button>
+    <button type="submit" class="save btn btn-default">Create</span></button>
 </form>
 {% endif %}
 {% if step == 1 %}
+
 <div>
     Todo: {{todo.name}}, {{todo.priority}}
 </div>
 {% for task in tasks %}
-    <div>
-        Task : {{task.name}} due for {{task.due_date}}, priority {{task.priority}}
-    </div>
+<div>
+    Task : {{task.name}} due for {{task.due_date}}, priority {{task.priority}}
+    <form method="POST" class="post-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete_task">
+        <input type="hidden" name="task_id" value="{{task.id}}">
+        <input type="hidden" name="todo_id" value="{{todo.id}}">
+        <button type="submit" class="save btn btn-default"><span class="glyphicon glyphicon-minus" aria-hidden="true"></button>
+    </form>
+</div>
 {% endfor %}
 
 <form method="post" class="post-form">
@@ -37,7 +56,7 @@
 
     <input type="hidden" name="action" value="create_task">
     <input type="hidden" name="todo_id" value="{{todo.id}}">
-    <button type="submit" class="save btn btn-default">Save</button>
+    <button type="submit" class="save btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></button>
 </form>
 {% endif %}
 
