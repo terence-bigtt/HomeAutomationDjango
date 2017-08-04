@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 
 from .forms import ToDoForm, TaskForm, TaskStatusForm
@@ -32,22 +32,33 @@ def todo_new(request):
         return render(request, 'notes/todo_create.html', {'form1': todo_form, 'step': 0})
     if request.method == "POST":
         if request.POST.get("action") == "create_todo":
-            todo = insert_todo(request)
-            task_form = TaskForm(initial={"owner": request.user})
-            return render(request, 'notes/todo_create.html', {'todo': todo, 'task_form': task_form, 'step': 1})
+            return create_todo(request)
         if request.POST.get("action") == "create_task":
-            todo = ToDo.objects.get(id=request.POST.get("todo_id"))
-            insert_task(request, todo)
-            previous_tasks, task_form = refresh_tasks(request, todo)
-            return render(request, 'notes/todo_create.html',
-                          {'todo': todo, 'tasks': previous_tasks, 'task_form': task_form, 'step': 1})
+            return create_task(request)
         if request.POST.get("action") == "delete_task":
-            delete_task(request)
-            todo = ToDo.objects.get(id=request.POST.get("todo_id"))
-            previous_tasks, task_form = refresh_tasks(request, todo)
-            return render(request, 'notes/todo_create.html',
-                          {'todo': todo, 'tasks': previous_tasks, 'task_form': task_form, 'step': 1})
+            return delete_task(request)
+        if request.POST.get("action") == "delete_todo":
+            return delete_todo(request)
 
+
+def create_todo(request):
+    todo = insert_todo(request)
+    task_form = TaskForm(initial={"owner": request.user})
+    return render(request, 'notes/todo_create.html', {'todo': todo, 'task_form': task_form, 'step': 1})
+
+def delete_todo(request):
+    try:
+        ToDo.objects.get(id=request.POST.get("todo_id")).delete()
+    except Exception as e:
+        print(e)
+        pass
+    return redirect(reverse_lazy('notes:index'))
+
+def create_task(request):
+    todo = ToDo.objects.get(id=request.POST.get("todo_id"))
+    insert_task(request, todo)
+    previous_tasks, task_form = refresh_tasks(request, todo)
+    return render(request, 'notes/todo_create.html', {'todo': todo, 'tasks': previous_tasks, 'task_form': task_form, 'step': 1})
 
 def refresh_tasks(request, todo):
     previous_tasks = Task.objects.filter(todo=todo)
@@ -80,3 +91,6 @@ def insert_task(request, todo):
 def delete_task(request):
     task_id = request.POST.get("task_id")
     Task.objects.get(id=task_id).delete()
+    todo = ToDo.objects.get(id=request.POST.get("todo_id"))
+    previous_tasks, task_form = refresh_tasks(request, todo)
+    return render(request, 'notes/todo_create.html', {'todo': todo, 'tasks': previous_tasks, 'task_form': task_form, 'step': 1})

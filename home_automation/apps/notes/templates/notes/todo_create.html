@@ -14,50 +14,90 @@ $(document).ready(function() {
 
 {% block page %}
 
-<h1>Create A New ToDo List</h1>
 {% if step == 0 %}
-<form method="POST" class="post-form">
-    {% csrf_token %}
-    <div>
-        <label>Name</label>
-        {{form1.name}}
-    </div>
-    <div>
-        <label>Priority</label>
-        {{form1.priority}}
-    </div>
-    <input type="hidden" name="action" value="create_todo">
-    <button type="submit" class="save btn btn-default">Create</span></button>
-</form>
-{% endif %}
-{% if step == 1 %}
-
-<div>
-    Todo: {{todo.name}}, {{todo.priority}}
-</div>
-{% for task in tasks %}
-<div>
-    Task : {{task.name}} due for {{task.due_date}}, priority {{task.priority}}
+<div class="col-md-8">
     <form method="POST" class="post-form">
         {% csrf_token %}
-        <input type="hidden" name="action" value="delete_task">
-        <input type="hidden" name="task_id" value="{{task.id}}">
-        <input type="hidden" name="todo_id" value="{{todo.id}}">
-        <button type="submit" class="save btn btn-default"><span class="glyphicon glyphicon-minus" aria-hidden="true"></button>
+        <div class="col-md-6">
+            <label>Name</label>
+            {{form1.name}}
+        </div>
+        <div class="col-md-3">
+            <label>Priority</label>
+            {{form1.priority}}
+        </div>
+        <div class="col-md-3">
+            <input type="hidden" name="action" value="create_todo">
+            <button type="submit" class="save btn btn-link"><span class="glyphicon glyphicon-plus"
+                                                                  aria-hidden="true"></span></button>
+        </div>
+
     </form>
 </div>
-{% endfor %}
+{% endif %}
 
-<form method="post" class="post-form">
-    {% csrf_token %}
-    <div>
-        {{task_form.as_p}}
-    </div>
 
-    <input type="hidden" name="action" value="create_task">
-    <input type="hidden" name="todo_id" value="{{todo.id}}">
-    <button type="submit" class="save btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></button>
-</form>
+{% if step == 1 %}
+<div class="col-md-8">
+    <ul class="list-group">
+        <li class="list-group-item-info clearfix">
+            <div class="col-md-6">
+                  <p class="text-capitalize"><strong>ToDo: {{todo.name}} - </strong></p>
+            </div>
+            <div class="col-md-3"><p class="text-capitalize"><strong>priority: {{todo.priority}}</p></div>
+            <div class="col-md-3 ">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_todo">
+                    <input type="hidden" name="todo_id" value="{{todo.id}}">
+                    <button type="submit" class="save btn btn-link"><span class="glyphicon glyphicon-minus"
+                                                                          aria-hidden="true"></span></button>
+                </form>
+            </div>
+        </li>
+
+        {% for task in tasks %}
+        <li class="list-group-item clearfix">
+            <div class="col-md-9">
+                Task : {{task.name}} due for {{task.due_date}}, priority {{task.priority}}
+            </div>
+            <div class="col-md-3">
+                <form method="POST" class="post-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_task">
+                    <input type="hidden" name="todo_id" value="{{todo.id}}">
+                    <input type="hidden" name="task_id" value="{{task.id}}">
+                    <button type="submit" class="save btn btn-link"><span class="glyphicon glyphicon-minus"
+                                                                          aria-hidden="true"></span></button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+        <li class="list-group-item clearfix">
+            <form method="post" class="post-form">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    {{ task_form.name }}
+                </div>
+                <div class="col-md-3">
+                    {{ task_form.priority }}
+                </div>
+                <div class="col-md-3">
+                    <input type="hidden" name="action" value="create_task">
+                    <input type="hidden" name="todo_id" value="{{todo.id}}">
+                    <button type="submit" class="save btn btn-link"><span class="glyphicon glyphicon-plus"
+                                                                          aria-hidden="true"></span></button>
+                </div>
+                <div class="col-md-6">
+                    {{ task_form.due_date }}
+                </div>
+                <div class="col-md-6">
+                    {{ task_form.assigned_to }}
+                </div>
+            </form>
+        </li>
+    </ul>
+</div>
 {% endif %}
 
 
