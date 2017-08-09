@@ -1,0 +1,47 @@
+{% extends "common/index.html" %}
+
+{% load todo_tags %}
+
+{% block page %}
+
+<ul class="list-group">
+    <li class="list-group-item clearfix">
+        <div class="col-md-6">
+            <strong>Name: </strong>
+            {{ todo.name }}
+        </div>
+        <div class="col-md-3">
+            <strong>Priority: </strong>
+            {{ todo.priority|priority_name }}
+        </div>
+        <div class="col-md-3">
+            ALLOWED CONTROLS HERE
+        </div>
+    </li>
+</ul>
+<ul class="list-group">
+    {% for task, statuses in tasks_with_statuses %}
+    <li class="list-group-item clearfix">
+    <div class="row">
+        <div class="col-md-6">
+            {{ task.name}}, assigned to {{task.assigned_to|assignees}} with {{task.priority|priority_name}} priority,
+        </div>
+        <div class="col-md-3">
+            due for {{task.due_date}},
+        </div>
+        <div class="col-md-3">
+            ALLOWED CONTROLS HERE
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">History</a>
+        </div>
+    </div>
+    <ul class="list-group">
+        {% for status in statuses %}
+        <li class="list-group-item">status {{status.status}}, set by {{status.set_by}} on {{status.created_at}}</li>
+        {% endfor %}
+    </ul>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

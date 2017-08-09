@@ -1,0 +1,35 @@
+<div class="row">
+    {% if owns_todo %}
+    <form method="POST" action="{% url notes:new_todo %}" class="post-form" id="todo-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_todo">
+        <input type="hidden" name="todo_id" value="{{todo.id}}">
+        <input type="hidden" name="action" value="create_or_update_todo">
+
+        <div class="col-sm-6">
+            <label>Name</label>
+            {{todo_form.name}}
+        </div>
+        <div class="col-sm-3">
+            <label>Priority</label>
+            {{todo_form.priority}}
+        </div>
+        <div class="col-sm-3">
+            <button type="submit" class="save btn btn-link"><span class="glyphicon glyphicon-ok"
+                                                                  aria-hidden="true"></span></button>
+        </div>
+    </form>
+
+    {% else %}
+    {% load todo_tags %}
+    <div class="col-sm-6">
+        <label>Name</label>
+        {{todo.name}}
+    </div>
+    <div class="col-sm-3">
+        <label>Priority</label>
+        {{ todo.priority|todo_priority_name }}
+    </div>
+    <div class="col-sm-3"></div>
+    {% endif %}
+</div>

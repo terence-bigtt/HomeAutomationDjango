@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 
 from .forms import ToDoForm, TaskForm, TaskStatusForm
-from .models import ToDo, Task
+from .models import ToDo, Task, TaskStatus
 
 
 @login_required(login_url=reverse_lazy('common:login'))
@@ -28,10 +28,11 @@ def index(request):
 
 
 @login_required(login_url=reverse_lazy('common:login'))
-def preview_todo(request):
-    form2 = TaskForm()
-    form3 = TaskStatusForm()
-
+def preview_todo(request, todo_id):
+    todo = ToDo.objects.get(id=todo_id)
+    tasks = Task.objects.filter(todo=todo)
+    tasks_with_statuses = [[task, sorted(TaskStatus.objects.filter(task=task), key=lambda t: t.created_at)] for task in tasks]
+    return render(request, 'notes/preview_todo.html', {"todo": todo, "tasks": tasks, "tasks_with_statuses": tasks_with_statuses})
 
 @login_required(login_url=reverse_lazy('common:login'))
 def todo_new(request):
@@ -43,7 +44,7 @@ def todo_new(request):
             return create_todo(request)
         if request.POST.get("action") == "delete_todo":
             return delete_todo(request)
-        if request.POST.get("action") == "edit_todo":
+        if request.POST.get("action") == "update_todo":
             return update_todo(request)
         if request.POST.get("action") == "create_task":
             return create_task(request)
