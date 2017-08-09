@@ -26,13 +26,17 @@ def user_todo_actions(context):
     :param context:
     :return:
     """
-    owns_todo = own_todo(context)
+    user = context["user"]
+    todo_id = context["todo"].id
+    owns_todo = own_todo(user, todo_id)
     return {"owns_todo": owns_todo}
 
 
 @register.inclusion_tag("notes/update_todo_form.html", takes_context=True, name="edit_todo")
 def edit_todo(context):
-    owns_todo = own_todo(context)
+    user = context["user"]
+    todo_id = context["todo"].id
+    owns_todo = own_todo(user, todo_id)
     return {"owns_todo": owns_todo}
 
 
@@ -46,9 +50,7 @@ def not_owns_todo(user, todo_id):
     return not owns_todo(user, todo_id)
 
 
-def own_todo(context):
-    user = context['user']
-    todo = context['todo']
+def own_todo(user, todo_id):
     try:
         todo = ToDo.objects.get(id=todo_id)
         owner = todo.owner

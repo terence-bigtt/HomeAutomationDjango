@@ -13,11 +13,9 @@
                             {{todo.name}}, Priority: {{todo.priority}}
                         </div>
                         <div class="col-md-1">
-                            <form class="form-inline" action="{%url 'notes:new_todo'%}" method="POST">
+                            <form class="form-inline" action="{%url 'notes:preview_todo' todo.id%}" method="POST">
                                 {% csrf_token %}
-                                <input type="hidden" name="action" value="create_task">
-                                <input type="hidden" name="todo_id" value="{{todo.id}}">
-                                <button type="submit" class="save btn btn-link"><span class="glyphicon glyphicon-pencil"
+                                <button type="submit" class="save btn btn-link"><span class="glyphicon glyphicon-eye-open"
                                                                                       aria-hidden="true"></span>
                                 </button>
                             </form>
